@@ -1,0 +1,61 @@
+---
+version: '3.7'
+services:
+  app:
+    container_name: app
+    build:
+      context: .
+      dockerfile: ./app/Dockerfile
+      target: app
+    hostname: app
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # - ./app/rootfs/app:/app
+    environment:
+      COMPOSE_PROJECT_NAME: "${COMPOSE_PROJECT_NAME}"
+    networks:
+      - app-net
+
+  nginx:
+    image: nginx
+    container_name: nginx
+    networks:
+      - app-net
+
+  php:
+    image: php
+    container_name: php
+    networks:
+      - app-net
+
+  mysql-v5.7:
+    image: mysql:5.7
+    container_name: mysql-v5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: "secret"
+    networks:
+      - app-net
+
+  mysql-v8:
+    image: mysql:8
+    container_name: mysql-v8
+    environment:
+      MYSQL_ROOT_PASSWORD: "secret"
+    networks:
+      - app-net
+
+  mongo:
+    image: mongo
+    container_name: mongo
+    networks:
+      - app-net
+
+  node:
+    image: node
+    container_name: node
+    networks:
+      - app-net
+
+networks:
+  app-net:
+    driver: bridge
